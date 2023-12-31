@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta
+            name="viewport"
+            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>Test</title>
+</head>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    .container {
+        width: 60vw;
+        display: grid;
+        margin: 100px auto 0;
+        justify-content: center;
+        gap: 10px;
+
+        select, input {
+            height: 24px;
+        }
+
+        section {
+            display: flex;
+            column-gap: 10px;
+            word-break: break-word;
+            padding: 5px 0;
+
+            span {
+                white-space: nowrap;
+            }
+        }
+
+    }
+</style>
+<body>
+<div class="container">
+    <div style="display: flex;gap: 10px;">
+        <label>
+            <select>
+                <option value="Md5">MD5</option>
+                <option value="Sha256">SHA256</option>
+                <option value="Sha512">SHA512</option>
+            </select>
+        </label>
+        <input type="file">
+    </div>
+    <div class="result"></div>
+</div>
+</body>
+<script type="module">
+    import init, {Md5, Sha256, Sha512} from "./dist/lib/digest_wasm.js";
+
+    const file_hash = async (ctx, file, chunkSize = 128 << 20) => {
+        for (let i = 0; i < Math.ceil(file.size / chunkSize); i++) {
+            const chuck = await file.slice(chunkSize * i, chunkSize * (i + 1)).arrayBuffer()
+            await ctx.update(new Uint8Array(chuck))
+        }
+        return ctx.finalize()
+    }
+    const uint = (n, s = " ") => {
+        const _uint = ["KB", "MB", "GB", "TB"].find(_ => (n /= 1024) < 1024);
+        return n.toFixed(2) + s + _uint
+    };
+
+    window.onload = async () => {
+        await init()
+        const input = document.querySelector("input")
+        const select = document.querySelector("select")
+        const result = document.querySelector(".result")
+        input.addEventListener("change", async e => {
+            result.innerHTML = "<div>计算中···</div>"
+            const ctx = {Md5, Sha256, Sha512}[select.value].new()
+            const file = e.target.files[0]
+            let size = file.size
+            const begin = Date.now()
+            const hash = await file_hash(ctx, file)
+            const end = Date.now() - begin
+
+            result.innerHTML = `
+            <section><span>耗时:</span>${end} ms</section>
+            <section><span>大小:</span>${uint(size)}</section>
+            <section><span>速度:</span>${uint(size / end * 1000)}/s</section>
+            <section><span>名字:</span>${file.name}</section>
+            <section><span>哈希:</span>${hash}</section>
+            `
+            input.value = null
+        })
+    }
+</script>
+
+</html>

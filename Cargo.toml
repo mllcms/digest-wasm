@@ -28,9 +28,11 @@ wasm-bindgen-test = "0.3.34"
 
 [profile.release]
 opt-level = 3
-lto = true
+lto = "z"
 strip = true
 panic = "abort"
-wasm-opt = ["-O"]
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-O4"]
 
 

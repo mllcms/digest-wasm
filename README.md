@@ -1,83 +1,58 @@
-<div align="center">
+# DigestWasm
 
-  <h1><code>wasm-pack-template</code></h1>
+基于 RustCrypto 库编译而成的 wasm 哈希库
 
-  <strong>A template for kick starting a Rust and WebAssembly project using <a href="https://github.com/rustwasm/wasm-pack">wasm-pack</a>.</strong>
+用于提高 Md5 Sha256 Sha512 等计算速度
 
-  <p>
-    <a href="https://travis-ci.org/rustwasm/wasm-pack-template"><img src="https://img.shields.io/travis/rustwasm/wasm-pack-template.svg?style=flat-square" alt="Build Status" /></a>
-  </p>
+**[WebAssembly](https://developer.mozilla.org/zh-CN/docs/WebAssembly)**
 
-  <h3>
-    <a href="https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html">Tutorial</a>
-    <span> | </span>
-    <a href="https://discordapp.com/channels/442252698964721669/443151097398296587">Chat</a>
-  </h3>
+**[测试地址](https://mllcms.github.io/digest-wasm/)**
 
-  <sub>Built with 🦀🕸 by <a href="https://rustwasm.github.io/">The Rust and WebAssembly Working Group</a></sub>
-</div>
-
-## About
-
-[**📚 Read this template tutorial! 📚**][template-docs]
-
-This template is designed for compiling Rust libraries into WebAssembly and
-publishing the resulting package to NPM.
-
-Be sure to check out [other `wasm-pack` tutorials online][tutorials] for other
-templates and usages of `wasm-pack`.
-
-[tutorials]: https://rustwasm.github.io/docs/wasm-pack/tutorials/index.html
-[template-docs]: https://rustwasm.github.io/docs/wasm-pack/tutorials/npm-browser-packages/index.html
-
-## 🚴 Usage
-
-### 🐑 Use `cargo generate` to Clone this Template
-
-[Learn more about `cargo generate` here.](https://github.com/ashleygwilliams/cargo-generate)
-
-```
-cargo generate --git https://github.com/rustwasm/wasm-pack-template.git --name my-project
-cd my-project
-```
-
-### 🛠️ Build with `wasm-pack`
-
-```
+## Build
+```shell
 wasm-pack build --release --target web --out-dir dist/lib && node patch.mjs && node test.mjs
 ```
 
-### 🔬 Test in Headless Browsers with `wasm-pack test`
+## Install
 
-```
-wasm-pack test --headless --firefox
-```
-
-### 🎁 Publish to NPM with `wasm-pack publish`
-
-```
-wasm-pack publish
+```shell
+pnpm install digest-wasm
 ```
 
-## 🔋 Batteries Included
+## Usage
 
-* [`wasm-bindgen`](https://github.com/rustwasm/wasm-bindgen) for communicating
-  between WebAssembly and JavaScript.
-* [`console_error_panic_hook`](https://github.com/rustwasm/console_error_panic_hook)
-  for logging panic messages to the developer console.
-* `LICENSE-APACHE` and `LICENSE-MIT`: most Rust projects are licensed this way, so these are included for you
+### 正常使用
 
-## License
+```js
+import {Md5, Sha256, Sha512} from "digest-wasm";
 
-Licensed under either of
+const md5 = await Md5.digest("Hello World!")
+const sha256 = await Sha256.digest("Hello World!")
+const sha512 = await Sha512.digest("Hello World!")
+```
 
-* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0)
+```js
+const buffer = await new Blob(["Hello World!"]).arrayBuffer()
+const md5 = await Md5.digest_u8(new Uint8Array(buffer))
+const sha256 = await Sha256.digest_u8(new Uint8Array(buffer))
+const sha512 = await Sha512.digest_u8(new Uint8Array(buffer))
+```
 
-at your option.
+### 增量计算
 
-### Contribution
+```js
+import {Md5, Sha256, Sha512} from "digest-wasm";
 
-Unless you explicitly state otherwise, any contribution intentionally
-submitted for inclusion in the work by you, as defined in the Apache-2.0
-license, shall be dual licensed as above, without any additional terms or
-conditions.
+const file_hash = async (file, chunkSize = 128 << 20) => {
+    const hash = Md5.new()
+    // const hash = Sha256.new()
+    // const hash = Sha512.new()
+
+    for (let i = 0; i < Math.ceil(file.size / chunkSize); i++) {
+        const chuck = await file.slice(chunkSize * i, chunkSize * (i + 1)).arrayBuffer()
+        await hash.update(new Uint8Array(chuck))
+    }
+
+    return hash.finalize()
+}
+```

@@ -5,7 +5,6 @@ const base = "./dist/lib"
 
 const input = await readFile(`${base}/${name}.js`, "utf8")
 
-
 const code = input
     .replace(/async function __wbg_load[\s\S]*?(?=function __wbg_get_imports)/, "")
     .replace(/async function __wbg_init[\s\S]*/, "")
@@ -39,6 +38,4 @@ initSync(bytes)
 
 await writeFile(`${base}/../${name}.js`, output)
 const removes = [".gitignore", "README.md", "package.json"]
-removes.forEach(async item => {
-    await unlink(`${base}/${item}`)
-})
+removes.forEach(async item => await unlink(`${base}/${item}`))

@@ -36,7 +36,7 @@ const sha512 = await Sha512.digest_u8(new Uint8Array(buffer))
 ### 增量计算
 
 ```js
-import init, {Md5, Sha256, Sha512} from "digest-wasm";
+import {Md5, Sha256, Sha512} from "digest-wasm";
 
 const file_hash = async (file, chunkSize = 128 << 20) => {
     const hash = Md5.new()
@@ -45,9 +45,9 @@ const file_hash = async (file, chunkSize = 128 << 20) => {
 
     for (let i = 0; i < Math.ceil(file.size / chunkSize); i++) {
         const chuck = await file.slice(chunkSize * i, chunkSize * (i + 1)).arrayBuffer()
-        await ctx.update(new Uint8Array(chuck))
+        await hash.update(new Uint8Array(chuck))
     }
 
-    return ctx.finalize()
+    return hash.finalize()
 }
 ```

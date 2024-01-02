@@ -41,10 +41,10 @@ cargo generate --git https://github.com/rustwasm/wasm-pack-template.git --name m
 cd my-project
 ```
 
-### 🛠️ Build with `wasm-pack build`
+### 🛠️ Build with `wasm-pack`
 
 ```
-wasm-pack build --release --target web --out-dir ./dist/lib
+wasm-pack build --release --target web --out-dir dist/lib && node patch.mjs && node test.mjs
 ```
 
 ### 🔬 Test in Headless Browsers with `wasm-pack test`

@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "digest-wasm",
   "collaborators": [
     "Mll <mllcms@163.com>"
@@ -22,12 +23,13 @@
     "url": "git+https://github.com/mllcms/digest-wasm"
   },
   "files": [
+    "digest_wasm.js",
     "lib/digest_wasm_bg.wasm",
     "lib/digest_wasm.js",
     "lib/digest_wasm.d.ts"
   ],
-  "main": "lib/digest_wasm.js",
-  "module": "lib/digest_wasm.js",
+  "main": "digest_wasm.js",
+  "module": "digest_wasm.js",
   "types": "lib/digest_wasm.d.ts",
   "sideEffects": [
     "./snippets/*"

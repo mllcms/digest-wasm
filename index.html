@@ -55,7 +55,7 @@
 </div>
 </body>
 <script type="module">
-    import init, {Md5, Sha256, Sha512} from "./dist/lib/digest_wasm.js";
+    import {Md5, Sha256, Sha512} from "./dist/digest_wasm.js"
 
     const file_hash = async (ctx, file, chunkSize = 128 << 20) => {
         for (let i = 0; i < Math.ceil(file.size / chunkSize); i++) {
@@ -70,7 +70,6 @@
     };
 
     window.onload = async () => {
-        await init()
         const input = document.querySelector("input")
         const select = document.querySelector("select")
         const result = document.querySelector(".result")

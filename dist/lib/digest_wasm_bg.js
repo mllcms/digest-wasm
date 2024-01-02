@@ -1,13 +1,32 @@
 let wasm;
-
 export function __wbg_set_wasm(val) {
     wasm = val;
 }
 
 
+const heap = new Array(128).fill(undefined);
+
+heap.push(undefined, null, true, false);
+
+function getObject(idx) { return heap[idx]; }
+
+let heap_next = heap.length;
+
+function dropObject(idx) {
+    if (idx < 132) return;
+    heap[idx] = heap_next;
+    heap_next = idx;
+}
+
+function takeObject(idx) {
+    const ret = getObject(idx);
+    dropObject(idx);
+    return ret;
+}
+
 const lTextDecoder = typeof TextDecoder === 'undefined' ? (0, module.require)('util').TextDecoder : TextDecoder;
 
-let cachedTextDecoder = new lTextDecoder('utf-8', {ignoreBOM: true, fatal: true});
+let cachedTextDecoder = new lTextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
 cachedTextDecoder.decode();
 
@@ -25,12 +44,6 @@ function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
 
-const heap = new Array(128).fill(undefined);
-
-heap.push(undefined, null, true, false);
-
-let heap_next = heap.length;
-
 function addHeapObject(obj) {
     if (heap_next === heap.length) heap.push(heap.length + 1);
     const idx = heap_next;
@@ -40,24 +53,8 @@ function addHeapObject(obj) {
     return idx;
 }
 
-function getObject(idx) {
-    return heap[idx];
-}
-
-function dropObject(idx) {
-    if (idx < 132) return;
-    heap[idx] = heap_next;
-    heap_next = idx;
-}
-
-function takeObject(idx) {
-    const ret = getObject(idx);
-    dropObject(idx);
-    return ret;
-}
-
 function makeMutClosure(arg0, arg1, dtor, f) {
-    const state = {a: arg0, b: arg1, cnt: 1, dtor};
+    const state = { a: arg0, b: arg1, cnt: 1, dtor };
     const real = (...args) => {
         // First up with a closure we increment the internal reference
         // count. This ensures that the Rust closure environment won't
@@ -80,7 +77,6 @@ function makeMutClosure(arg0, arg1, dtor, f) {
 
     return real;
 }
-
 function __wbg_adapter_16(arg0, arg1, arg2) {
     wasm.__wbindgen_export_1(arg0, arg1, addHeapObject(arg2));
 }
@@ -91,13 +87,16 @@ const lTextEncoder = typeof TextEncoder === 'undefined' ? (0, module.require)('u
 
 let cachedTextEncoder = new lTextEncoder('utf-8');
 
-const encodeString = (typeof cachedTextEncoder.encodeInto === 'function' ? function (arg, view) {
+const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
+    ? function (arg, view) {
     return cachedTextEncoder.encodeInto(arg, view);
-} : function (arg, view) {
+}
+    : function (arg, view) {
     const buf = cachedTextEncoder.encode(arg);
     view.set(buf);
     return {
-        read: arg.length, written: buf.length
+        read: arg.length,
+        written: buf.length
     };
 });
 
@@ -162,13 +161,12 @@ function handleError(f, args) {
         wasm.__wbindgen_export_5(addHeapObject(e));
     }
 }
-
 function __wbg_adapter_42(arg0, arg1, arg2, arg3) {
     wasm.__wbindgen_export_6(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
 /**
- */
+*/
 export class Md5 {
 
     static __wrap(ptr) {
@@ -190,51 +188,46 @@ export class Md5 {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_md5_free(ptr);
     }
-
     /**
-     * @returns {Md5}
-     */
+    * @returns {Md5}
+    */
     static new() {
         const ret = wasm.md5_new();
         return Md5.__wrap(ret);
     }
-
     /**
-     * @param {string} data
-     * @returns {Promise<string>}
-     */
+    * @param {string} data
+    * @returns {Promise<string>}
+    */
     static digest(data) {
         const ptr0 = passStringToWasm0(data, wasm.__wbindgen_export_2, wasm.__wbindgen_export_3);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.md5_digest(ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @param {Uint8Array} data
-     * @returns {Promise<string>}
-     */
-    static digest_u8(data) {
+    * @param {Uint8Array} data
+    * @returns {Promise<string>}
+    */
+    static digestU8(data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_export_2);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.md5_digest_u8(ptr0, len0);
+        const ret = wasm.md5_digestU8(ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @param {Uint8Array} data
-     * @returns {Promise<void>}
-     */
+    * @param {Uint8Array} data
+    * @returns {Promise<void>}
+    */
     update(data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_export_2);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.md5_update(this.__wbg_ptr, ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @returns {string}
-     */
+    * @returns {string}
+    */
     finalize() {
         let deferred1_0;
         let deferred1_1;
@@ -253,9 +246,8 @@ export class Md5 {
         }
     }
 }
-
 /**
- */
+*/
 export class Sha256 {
 
     static __wrap(ptr) {
@@ -277,51 +269,46 @@ export class Sha256 {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_sha256_free(ptr);
     }
-
     /**
-     * @returns {Sha256}
-     */
+    * @returns {Sha256}
+    */
     static new() {
         const ret = wasm.sha256_new();
         return Sha256.__wrap(ret);
     }
-
     /**
-     * @param {string} data
-     * @returns {Promise<string>}
-     */
+    * @param {string} data
+    * @returns {Promise<string>}
+    */
     static digest(data) {
         const ptr0 = passStringToWasm0(data, wasm.__wbindgen_export_2, wasm.__wbindgen_export_3);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.sha256_digest(ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @param {Uint8Array} data
-     * @returns {Promise<string>}
-     */
-    static digest_u8(data) {
+    * @param {Uint8Array} data
+    * @returns {Promise<string>}
+    */
+    static digestU8(data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_export_2);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.sha256_digest_u8(ptr0, len0);
+        const ret = wasm.sha256_digestU8(ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @param {Uint8Array} data
-     * @returns {Promise<void>}
-     */
+    * @param {Uint8Array} data
+    * @returns {Promise<void>}
+    */
     update(data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_export_2);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.sha256_update(this.__wbg_ptr, ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @returns {string}
-     */
+    * @returns {string}
+    */
     finalize() {
         let deferred1_0;
         let deferred1_1;
@@ -340,9 +327,8 @@ export class Sha256 {
         }
     }
 }
-
 /**
- */
+*/
 export class Sha512 {
 
     static __wrap(ptr) {
@@ -364,51 +350,46 @@ export class Sha512 {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_sha512_free(ptr);
     }
-
     /**
-     * @returns {Sha512}
-     */
+    * @returns {Sha512}
+    */
     static new() {
         const ret = wasm.sha512_new();
         return Sha512.__wrap(ret);
     }
-
     /**
-     * @param {string} data
-     * @returns {Promise<string>}
-     */
+    * @param {string} data
+    * @returns {Promise<string>}
+    */
     static digest(data) {
         const ptr0 = passStringToWasm0(data, wasm.__wbindgen_export_2, wasm.__wbindgen_export_3);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.sha512_digest(ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @param {Uint8Array} data
-     * @returns {Promise<string>}
-     */
-    static digest_u8(data) {
+    * @param {Uint8Array} data
+    * @returns {Promise<string>}
+    */
+    static digestU8(data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_export_2);
         const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.sha512_digest_u8(ptr0, len0);
+        const ret = wasm.sha512_digestU8(ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @param {Uint8Array} data
-     * @returns {Promise<void>}
-     */
+    * @param {Uint8Array} data
+    * @returns {Promise<void>}
+    */
     update(data) {
         const ptr0 = passArray8ToWasm0(data, wasm.__wbindgen_export_2);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.sha512_update(this.__wbg_ptr, ptr0, len0);
         return takeObject(ret);
     }
-
     /**
-     * @returns {string}
-     */
+    * @returns {string}
+    */
     finalize() {
         let deferred1_0;
         let deferred1_1;
@@ -428,13 +409,13 @@ export class Sha512 {
     }
 }
 
+export function __wbindgen_object_drop_ref(arg0) {
+    takeObject(arg0);
+};
+
 export function __wbindgen_string_new(arg0, arg1) {
     const ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
-};
-
-export function __wbindgen_object_drop_ref(arg0) {
-    takeObject(arg0);
 };
 
 export function __wbindgen_cb_drop(arg0) {
@@ -457,7 +438,7 @@ export function __wbg_queueMicrotask_adae4bc085237231(arg0) {
 };
 
 export function __wbindgen_is_function(arg0) {
-    const ret = typeof (getObject(arg0)) === 'function';
+    const ret = typeof(getObject(arg0)) === 'function';
     return ret;
 };
 
@@ -466,57 +447,45 @@ export function __wbg_newnoargs_c62ea9419c21fbac(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-export function __wbg_call_90c26b09837aba1c() {
-    return handleError(function (arg0, arg1) {
-        const ret = getObject(arg0).call(getObject(arg1));
-        return addHeapObject(ret);
-    }, arguments)
-};
+export function __wbg_call_90c26b09837aba1c() { return handleError(function (arg0, arg1) {
+    const ret = getObject(arg0).call(getObject(arg1));
+    return addHeapObject(ret);
+}, arguments) };
 
 export function __wbindgen_object_clone_ref(arg0) {
     const ret = getObject(arg0);
     return addHeapObject(ret);
 };
 
-export function __wbg_self_f0e34d89f33b99fd() {
-    return handleError(function () {
-        const ret = self.self;
-        return addHeapObject(ret);
-    }, arguments)
-};
+export function __wbg_self_f0e34d89f33b99fd() { return handleError(function () {
+    const ret = self.self;
+    return addHeapObject(ret);
+}, arguments) };
 
-export function __wbg_window_d3b084224f4774d7() {
-    return handleError(function () {
-        const ret = window.window;
-        return addHeapObject(ret);
-    }, arguments)
-};
+export function __wbg_window_d3b084224f4774d7() { return handleError(function () {
+    const ret = window.window;
+    return addHeapObject(ret);
+}, arguments) };
 
-export function __wbg_globalThis_9caa27ff917c6860() {
-    return handleError(function () {
-        const ret = globalThis.globalThis;
-        return addHeapObject(ret);
-    }, arguments)
-};
+export function __wbg_globalThis_9caa27ff917c6860() { return handleError(function () {
+    const ret = globalThis.globalThis;
+    return addHeapObject(ret);
+}, arguments) };
 
-export function __wbg_global_35dfdd59a4da3e74() {
-    return handleError(function () {
-        const ret = global.global;
-        return addHeapObject(ret);
-    }, arguments)
-};
+export function __wbg_global_35dfdd59a4da3e74() { return handleError(function () {
+    const ret = global.global;
+    return addHeapObject(ret);
+}, arguments) };
 
 export function __wbindgen_is_undefined(arg0) {
     const ret = getObject(arg0) === undefined;
     return ret;
 };
 
-export function __wbg_call_5da1969d7cd31ccd() {
-    return handleError(function (arg0, arg1, arg2) {
-        const ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
-        return addHeapObject(ret);
-    }, arguments)
-};
+export function __wbg_call_5da1969d7cd31ccd() { return handleError(function (arg0, arg1, arg2) {
+    const ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
+    return addHeapObject(ret);
+}, arguments) };
 
 export function __wbg_new_60f57089c7563e81(arg0, arg1) {
     try {

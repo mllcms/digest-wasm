@@ -1,3 +1,5 @@
+#![allow(clippy::new_without_default)]
+
 mod utils;
 
 use md5::{Md5 as _Md5, Md5Core};

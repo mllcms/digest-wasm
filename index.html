@@ -7,7 +7,7 @@
             content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <title>Test</title>
+    <title>digest-wasm-test</title>
 </head>
 <style>
     * {
@@ -17,10 +17,13 @@
 
     .container {
         width: 60vw;
+        height: 100vh;
         display: grid;
-        margin: 100px auto 0;
-        justify-content: center;
+        grid-template-rows: 30px 1fr 30px;
         gap: 10px;
+        margin: 0 auto;
+        padding: 10vh 0 4vh;
+        box-sizing: border-box;
 
         select, input {
             height: 24px;
@@ -37,6 +40,14 @@
             }
         }
 
+        .about {
+            margin-bottom: auto;
+
+            a {
+                color: #409eff;
+                text-decoration: none;
+            }
+        }
     }
 </style>
 <body>
@@ -52,6 +63,16 @@
         <input type="file">
     </div>
     <div class="result"></div>
+    <div class="about">
+        <span>相关资源:</span>
+        <a href="https://github.com/mllcms/digest-wasm" target="_blank">源码</a>
+        <a href="https://juejin.cn/post/7319541565318398003" target="_blank">掘金</a>
+        <a href="https://www.npmjs.com/package/digest-wasm" target="_blank">npm</a>
+        <a href="https://www.rust-lang.org/" target="_blank">rust</a>
+        <a href="https://rustwasm.github.io/" target="_blank">wasm-pack</a>
+        <a href="https://rustwasm.github.io/docs/wasm-bindgen/" target="_blank">wasm-bindgen</a>
+        <a href="https://developer.mozilla.org/zh-CN/docs/WebAssembly" target="_blank">WebAssembly</a>
+    </div>
 </div>
 </body>
 <script type="module">

@@ -1,97 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <meta
-            name="viewport"
-            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <title>Test</title>
-</head>
-<style>
+    <link rel="icon" href="./icon.ico" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>文件哈希计算</title>
+  </head>
+  <style>
     * {
-        padding: 0;
-        margin: 0;
+      padding: 0;
+      margin: 0;
     }
 
     .container {
-        width: 60vw;
-        display: grid;
-        margin: 100px auto 0;
-        justify-content: center;
+      width: min(400px, 60vw);
+      display: flex;
+      flex-flow: column;
+      margin: 0 auto;
+
+      .select {
+        display: flex;
         gap: 10px;
+        padding: 10vh 0 10px;
+      }
 
-        select, input {
-            height: 24px;
+      section {
+        display: flex;
+        column-gap: 10px;
+        word-break: break-word;
+        padding: 5px 0;
+
+        span {
+          white-space: nowrap;
         }
-
-        section {
-            display: flex;
-            column-gap: 10px;
-            word-break: break-word;
-            padding: 5px 0;
-
-            span {
-                white-space: nowrap;
-            }
-        }
-
+      }
     }
-</style>
-<body>
-<div class="container">
-    <div style="display: flex;gap: 10px;">
-        <label>
-            <select>
-                <option value="Md5">MD5</option>
-                <option value="Sha256">SHA256</option>
-                <option value="Sha512">SHA512</option>
-            </select>
-        </label>
-        <input type="file">
+
+    .about {
+      width: 60vw;
+      display: flex;
+      justify-content: center;
+      flex-flow: wrap;
+      gap: 10px;
+
+      position: fixed;
+      bottom: 4vh;
+      left: 50%;
+      transform: translateX(-50%);
+
+      a {
+        color: #409eff;
+        text-decoration: none;
+      }
+    }
+  </style>
+  <body>
+    <div class="container">
+      <div class="select">
+        <select title="digest">
+          <option value="Md5">MD5</option>
+          <option value="Sha256">SHA256</option>
+          <option value="Sha512">SHA512</option>
+        </select>
+        <label><input type="file" /></label>
+      </div>
+      <div class="result"></div>
     </div>
-    <div class="result"></div>
-</div>
-</body>
-<script type="module">
-    import {Md5, Sha256, Sha512} from "./dist/digest_wasm.js"
+    <div class="about">
+      <a href="https://github.com/mllcms/digest-wasm" target="_blank">源码</a>
+      <a href="https://juejin.cn/post/7319541565318398003" target="_blank">掘金</a>
+      <a href="https://www.npmjs.com/package/digest-wasm" target="_blank">npm</a>
+      <a href="https://www.rust-lang.org/" target="_blank">rust</a>
+      <a href="https://rustwasm.github.io/" target="_blank">wasm-pack</a>
+      <a href="https://rustwasm.github.io/docs/wasm-bindgen/" target="_blank">wasm-bindgen</a>
+      <a href="https://developer.mozilla.org/zh-CN/docs/WebAssembly" target="_blank">WebAssembly</a>
+    </div>
+  </body>
+  <script type="module">
+    import { Md5, Sha256, Sha512 } from './dist/digest_wasm.js'
 
     const file_hash = async (ctx, file, chunkSize = 128 << 20) => {
-        for (let i = 0; i < Math.ceil(file.size / chunkSize); i++) {
-            const chuck = await file.slice(chunkSize * i, chunkSize * (i + 1)).arrayBuffer()
-            await ctx.update(new Uint8Array(chuck))
-        }
-        return ctx.finalize()
+      for (let i = 0; i < Math.ceil(file.size / chunkSize); i++) {
+        const chuck = await file.slice(chunkSize * i, chunkSize * (i + 1)).arrayBuffer()
+        await ctx.update(new Uint8Array(chuck))
+      }
+      return ctx.finalize()
     }
-    const uint = (n, s = " ") => {
-        const _uint = ["KB", "MB", "GB", "TB"].find(_ => (n /= 1024) < 1024);
-        return n.toFixed(2) + s + _uint
-    };
+
+    const uint = (n, s = ' ') => {
+      const _uint = ['KB', 'MB', 'GB', 'TB'].find(_ => (n /= 1024) < 1024)
+      return n.toFixed(2) + s + _uint
+    }
 
     window.onload = async () => {
-        const input = document.querySelector("input")
-        const select = document.querySelector("select")
-        const result = document.querySelector(".result")
-        input.addEventListener("change", async e => {
-            result.innerHTML = "<div>计算中···</div>"
-            const ctx = {Md5, Sha256, Sha512}[select.value].new()
-            const file = e.target.files[0]
-            let size = file.size
-            const begin = Date.now()
-            const hash = await file_hash(ctx, file)
-            const end = Date.now() - begin
+      const input = document.querySelector('input')
+      const select = document.querySelector('select')
+      const result = document.querySelector('.result')
+      input.addEventListener('change', async e => {
+        result.innerHTML = '<div>计算中···</div>'
+        const ctx = { Md5, Sha256, Sha512 }[select.value].new()
+        const file = e.target.files[0]
+        let size = file.size
+        const begin = Date.now()
+        const hash = await file_hash(ctx, file)
+        const end = Date.now() - begin
 
-            result.innerHTML = `
+        result.innerHTML = `
             <section><span>耗时:</span>${end} ms</section>
             <section><span>大小:</span>${uint(size)}</section>
-            <section><span>速度:</span>${uint(size / end * 1000)}/s</section>
+            <section><span>速度:</span>${uint((size / end) * 1000)}/s</section>
             <section><span>名字:</span>${file.name}</section>
             <section><span>哈希:</span>${hash}</section>
             `
-            input.value = null
-        })
+        input.value = null
+      })
     }
-</script>
-
+  </script>
 </html>

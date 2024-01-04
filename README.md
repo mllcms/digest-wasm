@@ -51,3 +51,6 @@ const file_hash = async (file, chunkSize = 128 << 20) => {
     return hash.finalize()
 }
 ```
+
+### 静态引入
+> 下载 dist 目录下的 digest_wasm.js

@@ -1,7 +1,7 @@
-import {Md5, Sha256, Sha512} from "./dist/digest_wasm.js"
+import {Md5, Sha256, Sha512} from "digest-wasm"
 import {readFile} from "fs/promises"
 
-const data = await readFile("./LICENSE")
+const data = await readFile("../LICENSE")
 
 const md5 = await Md5.digest_u8(new Uint8Array(data))
 console.assert(md5 === "d229da563da18fe5d58cd95a6467d584", "MD5 计算结果不正确")

@@ -1,11 +1,10 @@
 {
-  "type": "module",
   "name": "digest-wasm",
   "collaborators": [
     "Mll <mllcms@163.com>"
   ],
   "description": "基于 RustCrypto 库编译而成的 wasm 哈希库; 用于提高 Md5 Sha256 Sha512 等计算速度",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "license": "Apache-2.0",
   "keywords": [
     "rust",
@@ -23,15 +22,16 @@
     "type": "git",
     "url": "git+https://github.com/mllcms/digest-wasm"
   },
-  "files": [
-    "digest_wasm.js",
-    "lib/digest_wasm_bg.wasm",
-    "lib/digest_wasm.js",
-    "lib/digest_wasm.d.ts"
-  ],
   "main": "digest_wasm.js",
   "module": "digest_wasm.js",
   "types": "lib/digest_wasm.d.ts",
+  "files": [
+    "digest_wasm.js",
+    "digest_wasm.mjs",
+    "lib/digest_wasm.js",
+    "lib/digest_wasm_bg.wasm",
+    "lib/digest_wasm.d.ts"
+  ],
   "sideEffects": [
     "./snippets/*"
   ]

@@ -1,16 +1,16 @@
-import {readFile, writeFile, unlink} from "fs/promises"
+import { readFile, writeFile, unlink } from 'fs/promises'
 
-const name = "digest_wasm"
-const base = "./dist/lib"
+const name = 'digest_wasm'
+const base = '../dist/lib'
 
-const input = await readFile(`${base}/${name}.js`, "utf8")
+const input = await readFile(`${base}/${name}.js`, 'utf8')
 
 const code = input
-    .replace(/async function __wbg_load[\s\S]*?(?=function __wbg_get_imports)/, "")
-    .replace(/async function __wbg_init[\s\S]*/, "")
-    .replace(/ *__wbg_init.__wbindgen_wasm_module = module;[\n\r]*/, "")
+  .replace(/async function __wbg_load[\s\S]*?(?=function __wbg_get_imports)/, '')
+  .replace(/async function __wbg_init[\s\S]*/, '')
+  .replace(/ *__wbg_init.__wbindgen_wasm_module = module;[\n\r]*/, '')
 
-const output = `${code}
+const esm = `${code}
 const __toBinary = (() => {
     const table = new Uint8Array(128);
     for (let i = 0; i < 64; i++) {
@@ -33,9 +33,14 @@ const __toBinary = (() => {
 
 const bytes = __toBinary(${JSON.stringify(await readFile(`${base}/${name}_bg.wasm`, 'base64'))});
 
-initSync(bytes)
-`
+initSync(bytes)`
 
-await writeFile(`${base}/../${name}.js`, output)
-const removes = [".gitignore", "README.md", "package.json"]
+await writeFile(`${base}/../${name}.mjs`, esm)
+
+const cjs = `${esm.replace(/export /g, '')}
+module.exports = { ${Object.keys(await import(`${base}/../${name}.mjs`)).join(',')} }`
+
+await writeFile(`${base}/../${name}.js`, cjs)
+
+const removes = ['.gitignore', 'README.md', 'package.json']
 removes.forEach(async item => await unlink(`${base}/${item}`))

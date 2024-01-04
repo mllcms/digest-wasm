@@ -8,11 +8,6 @@
 
 **[测试地址](https://mllcms.github.io/digest-wasm/)**
 
-## Build
-```shell
-wasm-pack build --release --target web --out-dir dist/lib && node patch.mjs && node test.mjs
-```
-
 ## Install
 
 ```shell

@@ -1,0 +1,12 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "digest-wasm": "link:..\\dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

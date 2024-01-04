@@ -81,7 +81,7 @@
 </div>
 </body>
 <script type="module">
-    import { Md5, Sha256, Sha512 } from './dist/digest_wasm.js'
+    import { Md5, Sha256, Sha512 } from './dist/digest_wasm.mjs'
 
     const file_hash = async (ctx, file, chunkSize = 128 << 20) => {
         for (let i = 0; i < Math.ceil(file.size / chunkSize); i++) {

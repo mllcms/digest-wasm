@@ -28,7 +28,7 @@ wasm-bindgen-test = "0.3.34"
 
 [profile.release]
 opt-level = 3
-lto = "z"
+lto = true
 strip = true
 panic = "abort"
 
